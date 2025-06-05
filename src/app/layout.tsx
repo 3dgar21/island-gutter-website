@@ -12,14 +12,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Island Gutter",
-  description: "Your trusted home improvement partner",
+  title: 'Island Gutter',
+  description: 'Your trusted home improvement partner',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className={`${geistSans.className}`}>{children}</body>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground`}
+    >
+      <body className={`${geistSans.className} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }

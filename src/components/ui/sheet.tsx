@@ -24,7 +24,11 @@ export const SheetContent = React.forwardRef<
       )}
       {...props}
     >
+      {/* Required for accessibility */}
+      <SheetPrimitive.Title className="sr-only">Mobile Navigation Menu</SheetPrimitive.Title>
+
       {children}
+
       <SheetPrimitive.Close className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
         <X className="h-5 w-5" />
         <span className="sr-only">Close</span>
