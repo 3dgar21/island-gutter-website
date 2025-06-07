@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import SectionWrapper from '@/components/shared/SectionWrapper';
 import { siteConfig } from '@/config/site';
 
@@ -13,15 +14,39 @@ export default function Hero() {
         {/* Text Block */}
         <div className="text-left">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-            {siteConfig.description}
+            Island Gutter: Your trusted partner for <br />
+            roofing, siding, windows, doors, kitchens, <br />
+            bathrooms, and professional gutter services <br />
+            (installation, repair, cleaning) in Staten Island
           </h1>
+
+          <p className="mt-6 text-muted-foreground text-lg max-w-prose">
+            Island Gutter Home Improvement & Supply Corp: Your trusted partner for roofing, siding, windows, doors,
+            kitchens, bathrooms, and professional gutter services (installation, repair, cleaning) in Staten Island.
+            We also sell a wide range of home improvement materials and tools.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link
+              href="#services"
+              className="bg-foreground text-background text-sm px-6 py-3 rounded-md shadow hover:shadow-md transition"
+            >
+              Our Services →
+            </Link>
+            <Link
+              href="#shop"
+              className="border text-sm px-6 py-3 rounded-md shadow hover:shadow-md transition flex items-center gap-2"
+            >
+              Browse Our Products 🛒
+            </Link>
+          </div>
         </div>
 
         {/* Image Block */}
         <div className="relative aspect-[4/3] w-full max-w-lg mx-auto md:mx-0 rounded-xl overflow-hidden shadow-xl bg-muted">
           <Image
-            src="/hero.jpg" // replace with your actual image in /public
-            alt="Island Gutter Hero Image"
+            src="/IMG_2404.jpg"
+            alt="Island Gutter Storefront"
             width={800}
             height={600}
             priority

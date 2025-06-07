@@ -5,6 +5,7 @@ import Testimonials from '../components/Testimonials';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
+import ShopPreview from '@/components/sections/ShopPreview';
 
 export default function HomePage() {
   return (
@@ -14,8 +15,10 @@ export default function HomePage() {
       <Services />
       <Gallery />
       <Testimonials />
+      <ShopPreview />
       <Contact />
       <Footer />
+
     </main>
   );
 }
