@@ -6,6 +6,7 @@ import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import ShopPreview from '@/components/sections/ShopPreview';
+import About from '@/components/About';
 
 export default function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default function HomePage() {
       <Gallery />
       <Testimonials />
       <ShopPreview />
+      <About />
       <Contact />
       <Footer />
 

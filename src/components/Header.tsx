@@ -32,7 +32,7 @@ export default function Header() {
             height={40}
             className="h-10 w-auto object-contain"
           />
-          <span className="font-bold text-lg md:text-xl text-foreground whitespace-nowrap">
+          <span className="font-bold text-lg md:text-xl text-accentBlack whitespace-nowrap">
             ISLAND GUTTER HOME IMPROVEMENT
           </span>
         </Link>
@@ -43,7 +43,7 @@ export default function Header() {
             <Link
               key={link.title}
               href={link.href}
-              className="transition-colors hover:text-primary"
+              className="transition-colors hover:text-primary text-accentBlack"
             >
               {link.title}
             </Link>
@@ -55,7 +55,7 @@ export default function Header() {
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
+                <Menu className="h-6 w-6 text-accentBlack" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
@@ -72,7 +72,7 @@ export default function Header() {
                   height={40}
                   className="h-10 w-auto object-contain"
                 />
-                <span className="font-bold text-lg text-foreground">
+                <span className="font-bold text-lg text-accentBlack">
                   ISLAND GUTTER HOME IMPROVEMENT
                 </span>
               </Link>
@@ -81,7 +81,7 @@ export default function Header() {
                   <SheetClose asChild key={link.title}>
                     <Link
                       href={link.href}
-                      className="text-lg font-medium transition-colors hover:text-primary"
+                      className="text-lg font-medium transition-colors hover:text-primary text-accentBlack"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {link.title}

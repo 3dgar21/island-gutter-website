@@ -1,7 +1,7 @@
-
 import { siteConfig } from '@/config/site';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Home, Facebook, Instagram } from 'lucide-react'; // Added Facebook and Instagram icons
+import { Mail, Phone, MapPin, Home } from 'lucide-react';
+import { FaFacebook, FaInstagram, FaTiktok } from 'react-icons/fa'; // TikTok icon
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -24,7 +24,7 @@ export default function Footer() {
                 aria-label="Facebook"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <Facebook className="h-6 w-6" />
+                <FaFacebook size={20} />
               </a>
             )}
             {siteConfig.socialLinks.instagram && (
@@ -35,10 +35,18 @@ export default function Footer() {
                 aria-label="Instagram"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <Instagram className="h-6 w-6" />
+                <FaInstagram size={20} />
               </a>
             )}
-            {/* Add other social links here similarly */}
+            <a
+              href="https://www.tiktok.com/@islandgutter"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="TikTok"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <FaTiktok size={20} />
+            </a>
           </div>
         </div>
 
@@ -70,9 +78,9 @@ export default function Footer() {
           </ul>
         </div>
       </div>
+
       <div className="container max-w-screen-2xl mt-8 pt-8 border-t border-border/40 text-center text-xs text-muted-foreground">
         <p>&copy; {currentYear} {siteConfig.name}. All rights reserved.</p>
-        {/* Optional: Add links to privacy policy, terms of service */}
       </div>
     </footer>
   );
