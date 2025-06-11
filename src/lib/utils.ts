@@ -38,11 +38,9 @@ export type Credential = {
 };
 
 export type Product = {
-  id: string;
   name: string;
-  description: string;
   price: string;
-  imageUrl: string;
   category: string;
-  dataAiHint: string;
+  image: string;
+  productnumber: string;
 };
