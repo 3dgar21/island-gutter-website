@@ -1,328 +1,178 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { allProducts } from '@/config/products';
 
-const allProducts = [
-  {
-    name: '1" #2 Phillips Drywall Screw Setter Carded',
-    price: "$2.15 / Each",
-    image: "/phillips_drywall_screw_setter_carded.png",
-    category: 'Tools',
-    productnumber: '44022'
-  },
-  {
-    name: '5 Pack Heavy Duty Utility Blades',
-    category: 'Tools',
-    price: '$1.09',
-    image: "/5_Pack_Heavy_Duty_Utility_blades.png",
-    productnumber: '11172'
-  },
-  {
-    name: '5 Pack Heavy Duty Hook Blades',
-    category: 'Tools',
-    price: '$6.49',
-    image: '/5_Pack_Heavy_Duty_Hook_Blades.png',
-    productnumber: '11172'
-  },
-  {
-    name: '100 Pack Utility Blades Dispenser',
-    price: "$1.16 / Each",
-    image: "/products/tool101.png",
-    category: 'Tools',
-  },
-  {
-    name: '100 Pack Heavy Duty Hook Blades',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool102.png"
-  },
-  {
-    name: '11 x 4-1/2"- 1/4 x 1/2" U Notched Trowel - Pro Grip',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool103.png"
-  },
-  {
-    name: '11 x 4-1/2"- 1/4 x 3/8" U Notched Trowel - Pro Grip',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool104.png"
-  },
-  {
-    name: '11 x 4-1/2"- 1/4 x 1/4" U Notched Trowel - Pro Grip',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool105.png"
-  },
-   {
-    name: '9-1/2 x 4" Tile Grouters Float',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool106.png"
-  },
-   {
-    name: '11" Double-End Nail Puller',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool107.png"
-  },
-   {
-    name: '7-1/2" Mini Pry Bar',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool108.png"
-  },
-   {
-    name: '8" PRY-Claw Nail Puller',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool109.png"
-  },
-   {
-    name: '16 oz. White Rubber Mallet',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool110.png"
-  },
-   {
-    name: '5/32 x 4-1/2" Concrete Drill Bit Carded',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool111.png"
-  },
-   {
-    name: 'Dead Blow Hammer - 32 oz Power Pro Grip',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool112.png"
-  },
-   {
-    name: '5/32 x 5-1/2" Concrete Drill Bit Carded',
-    category: 'Tools',
-    price: '$2.99',
-    image: "/products/tool113.png"
-  },
-  {
-    name: '1-1/4" Pro Grip Chisel Knife',
-    category: 'Tools',
-    price: '6.99',
-    image: "/products/tool114.png"
-  },
-  {
-    name: '5 Gallon Mud Mixer',
-    category: 'Tools',
-    price: '25.99',
-    image: "/products/tool115.png"
-  },
-  {
-    name: '3/16 x 5-1/2" Concrete Drill Bit Carded',
-    category: 'Tools',
-    price: '25.99',
-    image: "/products/tool116.png"
-  },
-  {
-    name: 'Speed Mixer - 3 Gallon',
-    category: 'Tools',
-    price: '14.99',
-    image: "/products/tool117.png"
-  },
-{
-    name: '16 oz. Fiberglass Rip Hammer',
-    category: 'Tools',
-    price: '15.32',
-    image: "/products/tool118.png"
-  },
-  {
-    name: '5/32 x 7" SDS-Plus Hex Drive Bit',
-    category: 'Tools',
-    price: '8.60',
-    image: "/products/tool119.png"
-  },
-{
-    name: '20 oz. Fiberglass Rip Hammer',
-    category: 'Tools',
-    price: '16.69',
-    image: "/products/tool120.png"
-  },
-{
-    name: '3/16 x 7" SDS-Plus Hex Drive Bit',
-    category: 'Tools',
-    price: '8.73',
-    image: "/products/tool121.png"
-  },
-{
-    name: '16 oz. Solid Steel Rip Hammer',
-    category: '',
-    price: '28.71',
-    image: "/products/tool122.png"
-  },
-{
-    name: '20 oz. Solid Steel Rip Hammer',
-    category: 'Tools',
-    price: '32.12',
-    image: "/products/tool123.png"
-  },
-{
-    name: 'Double Interlock Retractable Utility Knife',
-    category: 'Tools',
-    price: '5.31',
-    image: "/products/tool124.png"
-  },
-{
-    name: '4 lb. Jacketed Fiberglass Engineers Hammer',
-    category: 'Tools',
-    price: '26.84',
-    image: "/products/tool125.png"
-  },
-{
-    name: '1/2" Wood Chisel',
-    category: 'Tools',
-    price: '6.16',
-    image: "/products/tool126.png"
-  },
-{
-    name: '3/4" Wood Chisel',
-    category: 'Tools',
-    price: '6.33',
-    image: "/products/tool127.png"
-  },
-{
-    name: '1" Wood Chisel',
-    category: 'tools',
-    price: '6.51',
-    image: "/products/tool128.png"
-  },
-{
-    name: '3 Pc. Premium Wood Chisel Set',
-    category: 'Tools',
-    price: '19.68',
-    image: "/products/tool129.png"
-  },
- {
-    "name": "6 Pc Precision Screwdriver Set",
-    "category": "",
-    "price": "",
-    "image": "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17106-1.jpg&width=1920&format=web"
-  },
-{
-    name: '8 Pc Torx Tamper Key Set T8-T40 - S2 Tool Steel',
-    category: 'Tools',
-    price: '15.00',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17012-1.jpg&width=1920&format=webp"
-  },
-{
-    name: 'Hand Rivet Tool with 60 Pc Rivet Assortment - NEW ITEM!!',
-    category: 'Tools',
-    price: '25.00',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f16302-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '1/4 x 4" Slotted Screwdriver',
-    category: 'Tools',
-    price: '4.74',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17191-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '25 x 1" Power Return Tape',
-    category: 'Tools',
-    price: '11.06',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f13125-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '3/16 x 6" Slotted Screwdriver',
-    category: 'Tools',
-    price: '4.55',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17186-1.jpg&width=1920&format=webp"
-  },
-{
-    name: 'Rapid Reload® Retractable Utility Knife',
-    category: 'Tools',
-    price: '12.73',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f11193-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '#0 x 3" Phillips Screwdriver',
-    category: 'Tools',
-    price: '3.20',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17221-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '#1 x 4" Phillips Screwdriver',
-    category: 'Tools',
-    price: '4.26',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17226-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '#2 x 4" Robertson Screwdriver',
-    category: 'Tools',
-    price: '5.24',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f17264-1.jpg&width=1920&format=webp"
-  },
-{
-    name: '12" Bar Clamp',
-    category: 'Tools',
-    price: '16.13',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f16212-1.jpg&width=1920&format=webp"
-  },
-{
-    name: 'Sanding Sponge 46/80 Grit',
-    category: 'Tools',
-    price: '2.05',
-    image: "https://ivyclassic.com/Admin/Public/GetImage.ashx?image=%2fFiles%2fImages%2fIVY+Image+Pattern%2fSingle+Item+Images%2f42000-1.jpg&width=1920&format=webp"
-  },
+export default function ShopPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [quantities, setQuantities] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [cartItems, setCartItems] = useState([]);
+  const itemsPerPage = 9;
 
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart));
+    }
+  }, []);
 
-];
-export default function ShopPreview() {
+  const filteredProducts = allProducts.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (product.category || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const currentItems = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleQuantityChange = (productName, value) => {
+    setQuantities(prev => ({ ...prev, [productName]: value }));
+  };
+
+  const handleAddToCart = (product) => {
+    const quantity = quantities[product.name] || 1;
+    if (quantity < 1) return;
+
+    const updatedCart = (() => {
+      const existing = cartItems.find(item => item.name === product.name);
+      if (existing) {
+        return cartItems.map(item =>
+          item.name === product.name ? { ...item, quantity: item.quantity + quantity } : item
+        );
+      } else {
+        return [...cartItems, { ...product, quantity }];
+      }
+    })();
+
+    setCartItems(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    alert(`Added ${quantity} × ${product.name} to cart.`);
+  };
+
+  const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
-    <section id="shop" className="py-20 bg-muted/50">
-      <div className="max-w-7xl mx-auto px-4 text-center">
-        <h2 className="text-sm tracking-widest text-muted-foreground font-semibold uppercase">
-          Featured Materials & Tools
-        </h2>
-        <h3 className="text-3xl sm:text-4xl font-bold mb-10 text-foreground">
-          Our Products
-        </h3>
+    <section className="py-20 bg-muted/50">
+      <div className="fixed top-6 right-6 z-50">
+        <div className="relative">
+          <Link href="/shop/checkout">
+            <ShoppingCart className="w-8 h-8 text-foreground cursor-pointer" />
+          </Link>
+          {totalCartQuantity > 0 && (
+            <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full px-2 py-0.5">
+              {totalCartQuantity}
+            </span>
+          )}
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-          {allProducts.map((product) => (
-            <div
-              key={product.name}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden text-left"
-            >
-              <div className="bg-gray-100 aspect-[4/3] flex items-center justify-center">
-                <Image
-                  src={product.image}
-                  alt={`Photo of ${product.name}`}
-                  width={400}
-                  height={300}
-                  className="object-contain"
-                />
-              </div>
-              <div className="p-4">
-                <h4 className="font-semibold text-sm text-foreground mb-1">
-                  {product.name}
-                </h4>
-                <p className="text-xs text-muted-foreground mb-1">
-                  Category: {product.category}
-                </p>
-                <p className="text-sm text-foreground font-medium">
-                  {product.price}
-                </p>
-              </div>
-            </div>
-          ))}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center w-full mb-6">
+          <h2 className="text-sm tracking-widest text-muted-foreground font-semibold uppercase">
+            Browse Our Tools & Materials
+          </h2>
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Shop All Products
+          </h1>
         </div>
 
-        <div className="mt-10">
-          <a
-            href="/shop"
-            className="inline-block px-6 py-2 text-sm font-medium border border-input text-foreground hover:bg-muted rounded-md transition"
+        <div className="flex justify-center mb-10">
+          <input
+            type="text"
+            placeholder="Search tools or materials..."
+            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+          {currentItems.length > 0 ? (
+            currentItems.map((product) => (
+              <div key={product.name} className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden text-left">
+                <div className="bg-gray-100 aspect-[4/3] flex items-center justify-center">
+                  <img
+                    src={product.image}
+                    alt={`Photo of ${product.name}`}
+                    className="object-contain w-full h-full"
+                  />
+                </div>
+                <div className="p-4">
+                  <h4 className="font-semibold text-sm text-foreground mb-1">
+                    {product.name}
+                  </h4>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Category: {product.category || 'Uncategorized'}
+                  </p>
+                  <p className="text-sm text-foreground font-medium mb-2">
+                    {product.price}
+                  </p>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <label className="text-xs text-muted-foreground">Qty:</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={quantities[product.name] || 1}
+                      onChange={(e) => handleQuantityChange(product.name, Number(e.target.value))}
+                      className="w-16 px-2 py-1 border rounded"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="bg-primary text-white text-sm px-4 py-2 rounded hover:bg-primary/90 transition"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground col-span-full">No products found.</p>
+          )}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-10">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm border rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col items-center mt-10">
+          <button
+            onClick={() => { localStorage.removeItem('cart'); window.location.reload(); }}
+            className="ml-4 px-6 py-2 text-sm font-medium border border-destructive text-destructive hover:bg-destructive hover:text-white rounded-md transition"
           >
-            View All Products
-          </a>
-          <p className="mt-4 text-xs text-muted-foreground">
+            Clear Cart
+          </button>
+          <p className="mt-4 text-center text-muted-foreground">
             For bulk orders or specific inquiries, please{' '}
             <a href="/#contact" className="underline text-primary">
               contact us
