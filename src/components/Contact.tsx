@@ -104,12 +104,13 @@ export default function Contact() {
           <input
             name="phone"
             type="tel"
-            placeholder="Phone Number (Optional)"
+            placeholder="Phone Number "
             className="w-full px-4 py-2 border border-border rounded-md bg-muted/20 text-foreground"
           />
           <textarea
             name="message"
-            placeholder="How can we help you today?"
+            placeholder="How can we help you today?
+            If you'd like a free estimate, please let us know which services you're interested in. We'll get back to you as soon as possible!"
             rows={4}
             required
             className="w-full px-4 py-2 border border-border rounded-md bg-muted/20 text-foreground"
