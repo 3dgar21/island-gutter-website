@@ -6,6 +6,8 @@ interface SectionWrapperProps {
   children: React.ReactNode;
 }
 
+import * as React from 'react';
+
 export default function SectionWrapper({
   id,
   title,

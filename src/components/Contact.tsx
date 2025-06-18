@@ -46,44 +46,75 @@ export default function Contact() {
             </div>
           </div>
           <div className="flex justify-center md:justify-start gap-4 pt-4">
-            <a href="https://www.facebook.com/islandgutter" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+            <a
+              href="https://www.facebook.com/islandgutter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary"
+            >
               <FaFacebook size={24} />
             </a>
-            <a href="https://www.instagram.com/islandgutter" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+            <a
+              href="https://www.instagram.com/islandgutter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary"
+            >
               <FaInstagram size={24} />
             </a>
-            <a href="https://www.tiktok.com/@islandgutter" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+            <a
+              href="https://www.tiktok.com/@islandgutter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary"
+            >
               <FaTiktok size={24} />
             </a>
           </div>
         </div>
 
         {/* Right Side - Contact Form */}
-        <form className="bg-background border border-border rounded-xl p-6 shadow-sm space-y-5 w-full">
+        <form
+          action="https://formspree.io/f/xldnloeb"
+          method="POST"
+          className="bg-background border border-border rounded-xl p-6 shadow-sm space-y-5 w-full"
+        >
           <h4 className="text-lg font-semibold text-foreground">Send Us a Message</h4>
           <p className="text-sm text-muted-foreground">
             Fill out the form below, and we’ll get back to you as soon as possible.
           </p>
+
+          {/* Spam Trap */}
+          <input type="text" name="_gotcha" style={{ display: 'none' }} />
+
           <input
+            name="name"
             type="text"
             placeholder="Full Name"
+            required
             className="w-full px-4 py-2 border border-border rounded-md bg-muted/20 text-foreground"
           />
           <input
+            name="email"
             type="email"
             placeholder="Email Address"
+            required
             className="w-full px-4 py-2 border border-border rounded-md bg-muted/20 text-foreground"
           />
           <input
+            name="phone"
             type="tel"
             placeholder="Phone Number (Optional)"
             className="w-full px-4 py-2 border border-border rounded-md bg-muted/20 text-foreground"
           />
           <textarea
+            name="message"
             placeholder="How can we help you today?"
             rows={4}
+            required
             className="w-full px-4 py-2 border border-border rounded-md bg-muted/20 text-foreground"
           ></textarea>
+
           <button
             type="submit"
             className="w-full py-2 bg-foreground text-background font-medium rounded-md flex items-center justify-center gap-2 hover:opacity-90"

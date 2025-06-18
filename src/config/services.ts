@@ -9,11 +9,7 @@ import {
   Hammer,
   Construction,
   Square,
-  Sparkles,
-  Building2,
-  Ruler,
-  PaintRoller,
-} from 'lucide-react'; // ✅ all icons are valid
+} from 'lucide-react';
 
 export const services = [
   {
