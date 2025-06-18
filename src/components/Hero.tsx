@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import SectionWrapper from '@/components/shared/SectionWrapper';
-import { siteConfig } from '@/config/site';
 
 export default function Hero() {
   return (

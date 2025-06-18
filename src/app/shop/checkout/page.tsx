@@ -2,10 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Trash2, X } from 'lucide-react';
 
+type CartItem = {
+  name: string;
+  image: string;
+  price: string;
+  quantity: number;
+};
+
 export default function CheckoutPage() {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -19,7 +27,7 @@ export default function CheckoutPage() {
     setCartItems([]);
   };
 
-  const handleRemoveItem = (indexToRemove) => {
+  const handleRemoveItem = (indexToRemove: number) => {
     const updatedCart = cartItems.filter((_, index) => index !== indexToRemove);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
@@ -33,9 +41,7 @@ export default function CheckoutPage() {
   return (
     <section className="py-20 bg-muted/50 min-h-screen">
       <div className="max-w-5xl mx-auto px-4">
-        <h1 className="text-4xl font-bold text-foreground mb-8 text-center">
-          Checkout
-        </h1>
+        <h1 className="text-4xl font-bold text-foreground mb-8 text-center">Checkout</h1>
 
         {cartItems.length === 0 ? (
           <div className="text-center">
@@ -51,10 +57,12 @@ export default function CheckoutPage() {
             {cartItems.map((item, index) => (
               <div key={index} className="flex items-center justify-between bg-white p-4 rounded shadow">
                 <div className="flex items-center gap-4">
-                  <img
+                  <Image
                     src={item.image}
-                    alt={item.name}
-                    className="w-20 h-20 object-contain rounded"
+                    alt={item.name || 'Product image'}
+                    width={80}
+                    height={80}
+                    className="rounded object-contain"
                   />
                   <div>
                     <h2 className="text-lg font-semibold text-foreground">{item.name}</h2>

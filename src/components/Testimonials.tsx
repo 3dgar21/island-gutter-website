@@ -1,6 +1,6 @@
 import { testimonials } from '@/config/site';
 import SectionWrapper from '@/components/shared/SectionWrapper';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Quote } from 'lucide-react';
 
 export default function Testimonials() {
@@ -18,11 +18,17 @@ export default function Testimonials() {
           >
             <div className="mb-4">
               <Quote className="text-primary w-6 h-6 mb-4" />
-              <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
+              <p className="italic text-muted-foreground">
+                &ldquo;{testimonial.quote || 'No testimonial provided.'}&rdquo;
+              </p>
             </div>
             <div className="pt-6 text-right mt-auto">
-              <p className="font-semibold text-foreground">{testimonial.author}</p>
-              <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+              <p className="font-semibold text-foreground">
+                {testimonial.author || 'Anonymous'}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {testimonial.location || 'Staten Island'}
+              </p>
             </div>
           </Card>
         ))}

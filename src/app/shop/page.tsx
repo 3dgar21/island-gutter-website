@@ -4,14 +4,25 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { allProducts } from '@/config/products';
+
+type Product = {
+  name: string;
+  image: string;
+  price: string;
+  quantity?: number;
+  category?: string;
+};
+
+type QuantityMap = {
+  [key: string]: number;
+};
 
 export default function ShopPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [quantities, setQuantities] = useState({});
+  const [quantities, setQuantities] = useState<QuantityMap>({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
   const itemsPerPage = 9;
 
   useEffect(() => {
@@ -21,7 +32,7 @@ export default function ShopPage() {
     }
   }, []);
 
-  const filteredProducts = allProducts.filter(product =>
+  const filteredProducts = allProducts.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (product.category || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -32,19 +43,21 @@ export default function ShopPage() {
     currentPage * itemsPerPage
   );
 
-  const handleQuantityChange = (productName, value) => {
-    setQuantities(prev => ({ ...prev, [productName]: value }));
+  const handleQuantityChange = (productName: string, value: number) => {
+    setQuantities((prev) => ({ ...prev, [productName]: value }));
   };
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = (product: Product) => {
     const quantity = quantities[product.name] || 1;
     if (quantity < 1) return;
 
     const updatedCart = (() => {
-      const existing = cartItems.find(item => item.name === product.name);
+      const existing = cartItems.find((item) => item.name === product.name);
       if (existing) {
-        return cartItems.map(item =>
-          item.name === product.name ? { ...item, quantity: item.quantity + quantity } : item
+        return cartItems.map((item) =>
+          item.name === product.name
+            ? { ...item, quantity: item.quantity! + quantity }
+            : item
         );
       } else {
         return [...cartItems, { ...product, quantity }];
@@ -56,7 +69,10 @@ export default function ShopPage() {
     alert(`Added ${quantity} × ${product.name} to cart.`);
   };
 
-  const totalCartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalCartQuantity = cartItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0
+  );
 
   return (
     <section className="py-20 bg-muted/50">
@@ -99,12 +115,16 @@ export default function ShopPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           {currentItems.length > 0 ? (
             currentItems.map((product) => (
-              <div key={product.name} className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden text-left">
-                <div className="bg-gray-100 aspect-[4/3] flex items-center justify-center">
-                  <img
+              <div
+                key={product.name}
+                className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden text-left"
+              >
+                <div className="bg-gray-100 aspect-[4/3] relative">
+                  <Image
                     src={product.image}
                     alt={`Photo of ${product.name}`}
-                    className="object-contain w-full h-full"
+                    fill
+                    className="object-contain p-4"
                   />
                 </div>
                 <div className="p-4">
@@ -124,7 +144,9 @@ export default function ShopPage() {
                       type="number"
                       min={1}
                       value={quantities[product.name] || 1}
-                      onChange={(e) => handleQuantityChange(product.name, Number(e.target.value))}
+                      onChange={(e) =>
+                        handleQuantityChange(product.name, Number(e.target.value))
+                      }
                       className="w-16 px-2 py-1 border rounded"
                     />
                   </div>
@@ -139,7 +161,9 @@ export default function ShopPage() {
               </div>
             ))
           ) : (
-            <p className="text-muted-foreground col-span-full">No products found.</p>
+            <p className="text-muted-foreground col-span-full">
+              No products found.
+            </p>
           )}
         </div>
 
@@ -156,7 +180,9 @@ export default function ShopPage() {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
               className="px-4 py-2 text-sm border rounded disabled:opacity-50"
             >
@@ -167,16 +193,19 @@ export default function ShopPage() {
 
         <div className="flex flex-col items-center mt-10">
           <button
-            onClick={() => { localStorage.removeItem('cart'); window.location.reload(); }}
+            onClick={() => {
+              localStorage.removeItem('cart');
+              window.location.reload();
+            }}
             className="ml-4 px-6 py-2 text-sm font-medium border border-destructive text-destructive hover:bg-destructive hover:text-white rounded-md transition"
           >
             Clear Cart
           </button>
           <p className="mt-4 text-center text-muted-foreground">
             For bulk orders or specific inquiries, please{' '}
-            <a href="/#contact" className="underline text-primary">
+            <Link href="/#contact" className="underline text-primary">
               contact us
-            </a>
+            </Link>
             .
           </p>
         </div>

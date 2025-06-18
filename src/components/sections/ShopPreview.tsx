@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import Link from 'next/link';
 
 const allProducts = [
   {
@@ -66,17 +66,17 @@ export default function ShopPreview() {
         </div>
 
         <div className="mt-10">
-          <a
+          <Link
             href="/shop"
             className="inline-block px-6 py-2 text-sm font-medium border border-input text-foreground hover:bg-muted rounded-md transition"
           >
             View All Products
-          </a>
+          </Link>
           <p className="mt-4 text-xs text-muted-foreground">
             For bulk orders or specific inquiries, please{' '}
-            <a href="/#contact" className="underline text-primary">
+            <Link href="/#contact" className="underline text-primary">
               contact us
-            </a>
+            </Link>
             .
           </p>
         </div>
