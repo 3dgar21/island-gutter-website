@@ -1,7 +1,7 @@
 export type GalleryImage = {
   src: string;
   alt: string;
-  category: 'Gutters' | 'Decks' | 'Siding' | 'Concrete' | 'Before & After' | 'bathrooms' | 'Kitchens' | 'Roofing'| 'Other';
+  category: 'Gutters' | 'Decks' | 'Siding' | 'Concrete & Masonry Work' | 'Before & After' | 'bathrooms' | 'Kitchens' | 'Roofing'| 'Other';
 };
 
 export const galleryImages: GalleryImage[] = [
@@ -36,6 +36,30 @@ export const galleryImages: GalleryImage[] = [
     alt: 'bathroom renovation project',
     category: 'bathrooms',
     
+  },
+
+  {
+    src: '/gallery/concrete1.jpeg',
+    alt: 'Concrete and masonry work',
+    category: 'Concrete & Masonry Work',
+    
+  },
+  {
+    src: '/gallery/concrete2.jpeg',
+    alt: 'Concrete and masonry work',
+    category: 'Concrete & Masonry Work',
+    
+  },
+
+   {
+    src: '/gallery/sidding1.jpeg',
+    alt: 'sidding installation',
+    category: 'Siding',
+  },
+  {
+    src: '/gallery/sidding2.jpg',
+    alt: 'sidding installation',
+    category: 'Siding',
   },
   // Add the rest here...
 ];
