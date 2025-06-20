@@ -6,33 +6,53 @@ import { galleryImages } from '@/config/gallery';
 import SectionWrapper from '@/components/shared/SectionWrapper';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
+// Get unique categories from the image list
 const categories = [...new Set(galleryImages.map((img) => img.category))];
 
 export default function GalleryPage() {
+  // Ref map for each scrollable category container
+  const scrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
 
+  // Open the lightbox with images from selected category
   const openLightbox = (images: string[], index: number) => {
     setLightboxImages(images);
     setLightboxIndex(index);
   };
 
-  const closeLightbox = () => {
-    setLightboxIndex(null);
-  };
-
+  // Navigation
+  const closeLightbox = () => setLightboxIndex(null);
   const nextImage = () => {
     if (lightboxIndex !== null) {
       setLightboxIndex((lightboxIndex + 1) % lightboxImages.length);
     }
   };
-
   const prevImage = () => {
     if (lightboxIndex !== null) {
       setLightboxIndex(
         (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length
       );
     }
+  };
+
+  // Scroll left/right in the image row
+  const scroll = (category: string, direction: 'left' | 'right') => {
+    const container = scrollRefs.current[category];
+    if (container) {
+      const scrollAmount = 320;
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  // Properly typed ref setter for each scroll container
+  const setScrollRef = (category: string) => (el: HTMLDivElement | null) => {
+    scrollRefs.current[category] = el;
   };
 
   return (
@@ -46,32 +66,23 @@ export default function GalleryPage() {
           const filteredImages = galleryImages.filter(
             (img) => img.category === category
           );
-          const scrollRef = useRef<HTMLDivElement>(null);
-
-          const scroll = (direction: 'left' | 'right') => {
-            const scrollAmount = 320;
-            if (scrollRef.current) {
-              scrollRef.current.scrollBy({
-                left: direction === 'left' ? -scrollAmount : scrollAmount,
-                behavior: 'smooth',
-              });
-            }
-          };
 
           return (
             <section key={category} className="space-y-6">
               <h2 className="text-2xl font-bold text-center">{category}</h2>
 
               <div className="relative">
+                {/* Left Scroll Button */}
                 <button
                   className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full"
-                  onClick={() => scroll('left')}
+                  onClick={() => scroll(category, 'left')}
                 >
                   <ChevronLeft size={20} />
                 </button>
 
+                {/* Scrollable Container */}
                 <div
-                  ref={scrollRef}
+                  ref={setScrollRef(category)}
                   className="flex overflow-x-auto space-x-4 scroll-smooth scrollbar-hide px-10"
                 >
                   {filteredImages.map((image, index) => (
@@ -96,9 +107,10 @@ export default function GalleryPage() {
                   ))}
                 </div>
 
+                {/* Right Scroll Button */}
                 <button
                   className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full"
-                  onClick={() => scroll('right')}
+                  onClick={() => scroll(category, 'right')}
                 >
                   <ChevronRight size={20} />
                 </button>
@@ -108,7 +120,7 @@ export default function GalleryPage() {
         })}
       </div>
 
-      {/* LIGHTBOX VIEWER */}
+      {/* LIGHTBOX OVERLAY */}
       {lightboxIndex !== null && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
           <button
