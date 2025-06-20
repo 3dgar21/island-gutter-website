@@ -59,7 +59,8 @@ export default function GalleryPage() {
     <SectionWrapper
       id="gallery"
       title="Our Project Gallery"
-      subtitle="See Our Work"
+      subtitle="See Our Work... more pictures coming soon! stay tuned!" 
+    
     >
       <div className="space-y-20">
         {categories.map((category) => {

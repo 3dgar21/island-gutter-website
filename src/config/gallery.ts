@@ -11,7 +11,7 @@ export const galleryImages: GalleryImage[] = [
     category: 'Before & After',
   },
   {
-    src: '/gallery/after1.jpg',
+    src: '/gallery/after1.jpeg',
     alt: 'Gutter installation',
     category: 'Before & After',
   },
