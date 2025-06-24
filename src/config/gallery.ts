@@ -350,6 +350,26 @@ export const galleryImages: GalleryImage[] = [
     alt: 'sidding installation',
     category: 'Decks & Siding',
   },
+  {
+    src: '/gallery/s&d/pic13.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic14.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic15.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic16.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
 
   // Add the rest here...
 ];
