@@ -39,13 +39,13 @@ export const galleryImages: GalleryImage[] = [
   },
 
   {
-    src: '/gallery/concrete1.jpeg',
+    src: '/gallery/Concrete1.jpeg',
     alt: 'Concrete and masonry work',
     category: 'Concrete & Masonry Work',
     
   },
   {
-    src: '/gallery/concrete2.jpeg',
+    src: '/gallery/Concrete2.jpeg',
     alt: 'Concrete and masonry work',
     category: 'Concrete & Masonry Work',
     
@@ -57,7 +57,7 @@ export const galleryImages: GalleryImage[] = [
     category: 'Siding',
   },
   {
-    src: '/gallery/sidding2.jpg',
+    src: '/gallery/sidding2.jpeg',
     alt: 'sidding installation',
     category: 'Siding',
   },

@@ -185,20 +185,20 @@ export const contactFormFields = {
 export const shopProducts: Product[] = [
   {
     name: '1" #2 Phillips Drywall Screw Setter Carded',
-    price: "$1.16 / Each",
+    price: "$2.15 / Each",
     image: "/phillips_drywall_screw_setter_carded.png",
-    category: 'Tools'
+    category: 'Tools',
   },
   {
     name: '5 Pack Heavy Duty Utility Blades',
-    price: '$2.99',
+    category: 'Tools',
+    price: '$1.09',
     image: "/5_Pack_Heavy_Duty_Utility_blades.png",
-    category: 'Tools'
   },
   {
     name: '5 Pack Heavy Duty Hook Blades',
+    category: 'Tools',
     price: '$6.49',
-    image: '/5_Pack_Heavy_Duty_Hook_Bladesx.png',
-    category: 'Tools'
-  }
-];
+    image: '/5_Pack_Heavy_Duty_Hook_Blades.png',
+  },
+]

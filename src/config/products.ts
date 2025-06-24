@@ -29,73 +29,73 @@ export const allProducts = [
   {
     name: '100 Pack Heavy Duty Hook Blades',
     category: 'Tools',
-    price: '$2.99',
+    price: '$41.74',
     image: "/products/tool102.png"
   },
   {
     name: '11 x 4-1/2"- 1/4 x 1/2" U Notched Trowel - Pro Grip',
     category: 'Tools',
-    price: '$2.99',
+    price: '$13.04',
     image: "/products/tool103.png"
   },
   {
     name: '11 x 4-1/2"- 1/4 x 3/8" U Notched Trowel - Pro Grip',
     category: 'Tools',
-    price: '$2.99',
+    price: '$13.04',
     image: "/products/tool104.png"
   },
   {
     name: '11 x 4-1/2"- 1/4 x 1/4" U Notched Trowel - Pro Grip',
     category: 'Tools',
-    price: '$2.99',
+    price: '$13.04',
     image: "/products/tool105.png"
   },
    {
     name: '9-1/2 x 4" Tile Grouters Float',
     category: 'Tools',
-    price: '$2.99',
+    price: '$13.04',
     image: "/products/tool106.png"
   },
    {
     name: '11" Double-End Nail Puller',
     category: 'Tools',
-    price: '$2.99',
+    price: '$14.08',
     image: "/products/tool107.png"
   },
    {
     name: '7-1/2" Mini Pry Bar',
     category: 'Tools',
-    price: '$2.99',
+    price: '$5.68',
     image: "/products/tool108.png"
   },
    {
     name: '8" PRY-Claw Nail Puller',
     category: 'Tools',
-    price: '$2.99',
+    price: '$13.60',
     image: "/products/tool109.png"
   },
    {
     name: '16 oz. White Rubber Mallet',
     category: 'Tools',
-    price: '$2.99',
+    price: '$13.76',
     image: "/products/tool110.png"
   },
    {
     name: '5/32 x 4-1/2" Concrete Drill Bit Carded',
     category: 'Tools',
-    price: '$2.99',
+    price: '$4.68',
     image: "/products/tool111.png"
   },
    {
     name: 'Dead Blow Hammer - 32 oz Power Pro Grip',
     category: 'Tools',
-    price: '$2.99',
+    price: '$18.19',
     image: "/products/tool112.png"
   },
    {
     name: '5/32 x 5-1/2" Concrete Drill Bit Carded',
     category: 'Tools',
-    price: '$2.99',
+    price: '$4.87',
     image: "/products/tool113.png"
   },
   {

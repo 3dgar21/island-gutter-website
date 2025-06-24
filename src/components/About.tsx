@@ -40,11 +40,11 @@ export default function About() {
         {/* Right Image */}
         <div className="w-full max-w-md mx-auto lg:mx-0 rounded-xl overflow-hidden shadow-xl bg-muted aspect-square relative">
           <Image
-            src="https://placehold.co/500x500.png"
-            alt={`Image representing ${siteConfig.name} commitment`}
-            fill
-            className="object-cover"
-            data-ai-hint="about us team photo"
+                 src="/companycars.jpeg"
+                 alt={`Image representing ${siteConfig.name} commitment`}
+                 fill
+                 className="object-cover"
+                 data-ai-hint="about us team photo"
           />
         </div>
       </div>
