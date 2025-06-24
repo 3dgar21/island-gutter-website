@@ -2,28 +2,24 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { galleryImages } from '@/config/gallery';
 import SectionWrapper from '@/components/shared/SectionWrapper';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-// Get unique categories from the image list
 const categories = [...new Set(galleryImages.map((img) => img.category))];
 
 export default function GalleryPage() {
-  // Ref map for each scrollable category container
   const scrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
 
-  // Open the lightbox with images from selected category
   const openLightbox = (images: string[], index: number) => {
     setLightboxImages(images);
     setLightboxIndex(index);
   };
 
-  // Navigation
   const closeLightbox = () => setLightboxIndex(null);
   const nextImage = () => {
     if (lightboxIndex !== null) {
@@ -38,7 +34,6 @@ export default function GalleryPage() {
     }
   };
 
-  // Scroll left/right in the image row
   const scroll = (category: string, direction: 'left' | 'right') => {
     const container = scrollRefs.current[category];
     if (container) {
@@ -50,7 +45,6 @@ export default function GalleryPage() {
     }
   };
 
-  // Properly typed ref setter for each scroll container
   const setScrollRef = (category: string) => (el: HTMLDivElement | null) => {
     scrollRefs.current[category] = el;
   };
@@ -59,9 +53,17 @@ export default function GalleryPage() {
     <SectionWrapper
       id="gallery"
       title="Our Project Gallery"
-      subtitle="See Our Work... more pictures coming soon! stay tuned!" 
-    
+      subtitle="See Our Work... more pictures coming soon! stay tuned!"
     >
+      {/* Floating Top-Left Back Button */}
+      <div className="fixed top-6 left-6 z-50">
+        <Link href="/">
+          <button className="bg-white border px-4 py-2 shadow rounded-lg hover:bg-gray-100 transition">
+            ← Home
+          </button>
+        </Link>
+      </div>
+
       <div className="space-y-20">
         {categories.map((category) => {
           const filteredImages = galleryImages.filter(
@@ -119,6 +121,15 @@ export default function GalleryPage() {
             </section>
           );
         })}
+
+        {/* Bottom Back to Home Button */}
+        <div className="flex justify-center mt-16">
+          <Link href="/">
+            <button className="bg-gray-800 text-white px-6 py-2 rounded-xl shadow hover:bg-gray-700 transition">
+              ← Back to Home
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* LIGHTBOX OVERLAY */}

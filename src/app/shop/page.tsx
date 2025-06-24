@@ -76,6 +76,16 @@ export default function ShopPage() {
 
   return (
     <section className="py-20 bg-muted/50">
+      {/* Floating Top-Left Back Button */}
+      <div className="fixed top-6 left-6 z-50">
+        <Link href="/">
+          <button className="bg-white border px-4 py-2 shadow rounded-lg hover:bg-gray-100 transition">
+            ← Home
+          </button>
+        </Link>
+      </div>
+
+      {/* Cart Icon */}
       <div className="fixed top-6 right-6 z-50">
         <div className="relative">
           <Link href="/shop/checkout">
@@ -90,6 +100,7 @@ export default function ShopPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
         <div className="text-center w-full mb-6">
           <h2 className="text-sm tracking-widest text-muted-foreground font-semibold uppercase">
             Browse Our Tools & Materials
@@ -99,6 +110,7 @@ export default function ShopPage() {
           </h1>
         </div>
 
+        {/* Search */}
         <div className="flex justify-center mb-10">
           <input
             type="text"
@@ -112,6 +124,7 @@ export default function ShopPage() {
           />
         </div>
 
+        {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           {currentItems.length > 0 ? (
             currentItems.map((product) => (
@@ -167,6 +180,7 @@ export default function ShopPage() {
           )}
         </div>
 
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-10">
             <button
@@ -191,6 +205,7 @@ export default function ShopPage() {
           </div>
         )}
 
+        {/* Footer CTA */}
         <div className="flex flex-col items-center mt-10">
           <button
             onClick={() => {
@@ -208,6 +223,15 @@ export default function ShopPage() {
             </Link>
             .
           </p>
+        </div>
+
+        {/* Bottom Back to Home Button */}
+        <div className="flex justify-center mt-10">
+          <Link href="/">
+            <button className="bg-gray-800 text-white px-6 py-2 rounded-xl shadow hover:bg-gray-700 transition">
+              ← Back to Home
+            </button>
+          </Link>
         </div>
       </div>
     </section>
