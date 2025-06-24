@@ -320,5 +320,36 @@ export const galleryImages: GalleryImage[] = [
     alt: 'Gutter and roofing installation',
     category: 'Gutters & Roofing',
   },
+  {
+    src: '/gallery/s&d/pic7.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic8.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic9.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic10.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic11.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+  {
+    src: '/gallery/s&d/pic12.jpeg',
+    alt: 'sidding installation',
+    category: 'Decks & Siding',
+  },
+
   // Add the rest here...
 ];
