@@ -38,27 +38,34 @@ export default function OrdersAdminPage() {
       const res = await fetch('/api/orders');
       const data: Order[] = await res.json();
       setOrders(data);
-    } catch (err) {
+    } catch (err: unknown) {
       setError('Failed to load orders.');
-      console.error(err);
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error(message);
     }
   };
 
   const handleDelete = async (id: number) => {
-    const res = await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      setOrders(prev => prev.filter(order => order.id !== id));
+    try {
+      const res = await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setOrders((prev) => prev.filter((order) => order.id !== id));
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to delete order';
+      console.error(message);
     }
   };
 
   const exportToCSV = () => {
     const headers = ['ID', 'Name', 'Email', 'Phone', 'Address', 'Items', 'Total', 'Date'];
-    const rows = orders.map(order => {
+    const rows = orders.map((order) => {
       let items: CartItem[] = [];
       try {
         items = JSON.parse(order.items);
-      } catch (e) {
-        console.error('Invalid item format', e);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : 'Invalid item format';
+        console.error(msg);
       }
 
       return [
@@ -67,7 +74,7 @@ export default function OrdersAdminPage() {
         order.email,
         order.phone,
         order.address,
-        items.map((item: CartItem) => `${item.name} x${item.quantity}`).join('; '),
+        items.map((item) => `${item.name} x${item.quantity}`).join('; '),
         `$${order.total.toFixed(2)}`,
         new Date(order.created_at).toLocaleString(),
       ];
@@ -75,7 +82,7 @@ export default function OrdersAdminPage() {
 
     const csvContent =
       [headers, ...rows]
-        .map(row => row.map(String).map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+        .map((row) => row.map(String).map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
         .join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -149,12 +156,13 @@ export default function OrdersAdminPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map(order => {
+              {orders.map((order) => {
                 let parsedItems: CartItem[] = [];
                 try {
                   parsedItems = JSON.parse(order.items);
-                } catch (e) {
-                  console.error('Could not parse items', e);
+                } catch (e: unknown) {
+                  const msg = e instanceof Error ? e.message : 'Could not parse items';
+                  console.error(msg);
                 }
 
                 return (
@@ -165,7 +173,7 @@ export default function OrdersAdminPage() {
                     <td className="p-2">{order.phone}</td>
                     <td className="p-2 whitespace-pre-wrap">{order.address}</td>
                     <td className="p-2 whitespace-pre-wrap">
-                      {parsedItems.map(item => `${item.name} x${item.quantity}`).join(', ')}
+                      {parsedItems.map((item) => `${item.name} x${item.quantity}`).join(', ')}
                     </td>
                     <td className="p-2">${order.total.toFixed(2)}</td>
                     <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>

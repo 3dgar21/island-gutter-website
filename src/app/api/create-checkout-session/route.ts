@@ -43,7 +43,7 @@ export async function POST(req: Request): Promise<Response> {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error) {
+  } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown Stripe error';
     console.error('Stripe error:', message);
     return new Response(JSON.stringify({ error: message }), {
