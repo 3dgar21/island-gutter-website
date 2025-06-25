@@ -38,6 +38,12 @@ export default function Hero() {
             >
               Browse Our Products 🛒
             </Link>
+            <Link
+              href="#contact"
+              className="border text-sm px-6 py-3 rounded-md shadow hover:shadow-md transition flex items-center gap-2"
+            >
+              Get A Free Estimate 📞
+            </Link>
           </div>
         </div>
 
