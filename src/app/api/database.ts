@@ -1,13 +1,20 @@
 import path from 'path';
 import sqlite3 from 'sqlite3';
 
+// Path to the SQLite database
 const dbPath = path.join(process.cwd(), 'orders.db');
-export const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, err => {
-  if (err) console.error(err.message);
-  else console.log('✅ Connected to orders.db');
-});
 
-// Create the table if it doesn't exist
+// Connect to the database
+export const db = new sqlite3.Database(
+  dbPath,
+  sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+  (err) => {
+    if (err) console.error(err.message);
+    else console.log('✅ Connected to orders.db');
+  }
+);
+
+// Create the orders table if it doesn't exist
 db.run(`
   CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,12 +28,20 @@ db.run(`
   )
 `);
 
-export const apiRun = (query: string, params: any[] = []) =>
-  new Promise<void>((res, rej) => {
-    db.run(query, params, err => (err ? rej(err) : res()));
+// ✅ Type-safe wrapper for db.run (no return data)
+export const apiRun = (query: string, params: unknown[] = []): Promise<void> =>
+  new Promise((resolve, reject) => {
+    db.run(query, params, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
   });
 
-export const apiGet = <T>(query: string, params: any[] = []) =>
-  new Promise<T[]>((res, rej) => {
-    db.all(query, params, (err, rows) => (err ? rej(err) : res(rows)));
+// ✅ Generic, type-safe db.all wrapper
+export const apiGet = <T>(query: string, params: unknown[] = []): Promise<T[]> =>
+  new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows as T[]);
+    });
   });

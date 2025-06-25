@@ -2,13 +2,19 @@
 
 import { useEffect, useState } from 'react';
 
+type CartItem = {
+  name: string;
+  price: string;
+  quantity: number;
+};
+
 type Order = {
   id: number;
   name: string;
   email: string;
   phone: string;
   address: string;
-  items: string;
+  items: string; // Stored JSON string
   total: number;
   created_at: string;
 };
@@ -30,7 +36,7 @@ export default function OrdersAdminPage() {
   const fetchOrders = async () => {
     try {
       const res = await fetch('/api/orders');
-      const data = await res.json();
+      const data: Order[] = await res.json();
       setOrders(data);
     } catch (err) {
       setError('Failed to load orders.');
@@ -47,18 +53,26 @@ export default function OrdersAdminPage() {
 
   const exportToCSV = () => {
     const headers = ['ID', 'Name', 'Email', 'Phone', 'Address', 'Items', 'Total', 'Date'];
-    const rows = orders.map(order => [
-      order.id,
-      order.name,
-      order.email,
-      order.phone,
-      order.address,
-      JSON.parse(order.items)
-        .map((item: any) => `${item.name} x${item.quantity}`)
-        .join('; '),
-      `$${order.total.toFixed(2)}`,
-      new Date(order.created_at).toLocaleString(),
-    ]);
+    const rows = orders.map(order => {
+      let items: CartItem[] = [];
+      try {
+        items = JSON.parse(order.items);
+      } catch (e) {
+        console.error('Invalid item format', e);
+      }
+
+      return [
+        order.id,
+        order.name,
+        order.email,
+        order.phone,
+        order.address,
+        items.map((item: CartItem) => `${item.name} x${item.quantity}`).join('; '),
+        `$${order.total.toFixed(2)}`,
+        new Date(order.created_at).toLocaleString(),
+      ];
+    });
+
     const csvContent =
       [headers, ...rows]
         .map(row => row.map(String).map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
@@ -135,28 +149,37 @@ export default function OrdersAdminPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map(order => (
-                <tr key={order.id} className="border-t hover:bg-muted/30">
-                  <td className="p-2">{order.id}</td>
-                  <td className="p-2">{order.name}</td>
-                  <td className="p-2">{order.email}</td>
-                  <td className="p-2">{order.phone}</td>
-                  <td className="p-2 whitespace-pre-wrap">{order.address}</td>
-                  <td className="p-2 whitespace-pre-wrap">
-                    {JSON.parse(order.items).map((item: any) => `${item.name} x${item.quantity}`).join(', ')}
-                  </td>
-                  <td className="p-2">${order.total.toFixed(2)}</td>
-                  <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>
-                  <td className="p-2">
-                    <button
-                      onClick={() => handleDelete(order.id)}
-                      className="text-red-500 hover:text-red-700 text-xs"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {orders.map(order => {
+                let parsedItems: CartItem[] = [];
+                try {
+                  parsedItems = JSON.parse(order.items);
+                } catch (e) {
+                  console.error('Could not parse items', e);
+                }
+
+                return (
+                  <tr key={order.id} className="border-t hover:bg-muted/30">
+                    <td className="p-2">{order.id}</td>
+                    <td className="p-2">{order.name}</td>
+                    <td className="p-2">{order.email}</td>
+                    <td className="p-2">{order.phone}</td>
+                    <td className="p-2 whitespace-pre-wrap">{order.address}</td>
+                    <td className="p-2 whitespace-pre-wrap">
+                      {parsedItems.map(item => `${item.name} x${item.quantity}`).join(', ')}
+                    </td>
+                    <td className="p-2">${order.total.toFixed(2)}</td>
+                    <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => handleDelete(order.id)}
+                        className="text-red-500 hover:text-red-700 text-xs"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

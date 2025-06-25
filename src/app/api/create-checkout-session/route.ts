@@ -1,14 +1,21 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: '2025-05-28.basil', // ✅ use latest stable API version
 });
 
-export async function POST(req: Request) {
-  try {
-    const { cartItems } = await req.json();
+type CartItem = {
+  name: string;
+  price: string;
+  quantity: number;
+};
 
-    const line_items = cartItems.map((item: any) => ({
+export async function POST(req: Request): Promise<Response> {
+  try {
+    const body = await req.json();
+    const cartItems: CartItem[] = body.cartItems;
+
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => ({
       price_data: {
         currency: 'usd',
         product_data: {
@@ -19,6 +26,8 @@ export async function POST(req: Request) {
       quantity: item.quantity,
     }));
 
+    const origin = req.headers.get('origin') ?? 'http://localhost:3000';
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items,
@@ -26,13 +35,20 @@ export async function POST(req: Request) {
       shipping_address_collection: {
         allowed_countries: ['US', 'CA'],
       },
-      success_url: `${req.headers.get('origin')}/success`,
-      cancel_url: `${req.headers.get('origin')}/shop/checkout`,
+      success_url: `${origin}/success`,
+      cancel_url: `${origin}/shop/checkout`,
     });
 
-    return new Response(JSON.stringify({ url: session.url }), { status: 200 });
-  } catch (err: any) {
-    console.error('Stripe error:', err.message);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    return new Response(JSON.stringify({ url: session.url }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown Stripe error';
+    console.error('Stripe error:', message);
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
