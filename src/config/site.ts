@@ -212,16 +212,7 @@ The price was very reasonable, the work very professional and the whole experien
     author: "Dennis Brown",
     location: "Staten Island, NY" 
   },
-   {
-    quote: "",
-    author: "Anonymous",
-    location: "Staten Island, NY" 
-  },
-   {
-    quote: "",
-    author: "Anonymous",
-    location: "Staten Island, NY" 
-  },
+   // Add more testimonials as needed
 ];
 
 export const credentials: Credential[] = [
