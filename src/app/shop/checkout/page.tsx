@@ -14,6 +14,11 @@ type CartItem = {
 
 export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -37,6 +42,50 @@ export default function CheckoutPage() {
     const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
     return total + price * item.quantity;
   }, 0);
+
+  const handlePlaceOrder = async () => {
+    if (!name || !address || !phone || !email) {
+      setError('Please fill out all delivery details.');
+      return;
+    }
+
+    try {
+      // Step 1: Create Stripe Checkout session
+      const stripeRes = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cartItems }),
+      });
+
+      const stripeData = await stripeRes.json();
+
+      if (!stripeData.url) {
+        alert('❌ Failed to create checkout session.');
+        return;
+      }
+
+      // Step 2: Save order to SQLite (with user info)
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          address,
+          phone,
+          email,
+          cartItems,
+          total: totalAmount,
+        }),
+      });
+
+      // Step 3: Redirect to Stripe Checkout
+      window.location.href = stripeData.url;
+
+    } catch (err) {
+      console.error(err);
+      alert('❌ Something went wrong during checkout.');
+    }
+  };
 
   return (
     <section className="py-20 bg-muted/50 min-h-screen">
@@ -81,6 +130,49 @@ export default function CheckoutPage() {
             <div className="flex justify-between items-center pt-6 border-t">
               <h3 className="text-xl font-bold text-foreground">Total:</h3>
               <span className="text-xl font-semibold text-primary">${totalAmount.toFixed(2)}</span>
+            </div>
+
+            {/* 🚚 Delivery Details Form */}
+            <div className="bg-white p-6 rounded shadow mt-6">
+              <h2 className="text-xl font-semibold mb-4 text-foreground">Delivery Information</h2>
+              {error && <p className="text-red-500 mb-2">{error}</p>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="border border-input p-2 rounded"
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="border border-input p-2 rounded"
+                />
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border border-input p-2 rounded col-span-full"
+                />
+                <textarea
+                  placeholder="Delivery Address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="border border-input p-2 rounded col-span-full"
+                  rows={3}
+                />
+              </div>
+
+              <button
+                onClick={handlePlaceOrder}
+                className="mt-6 w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary/90 transition"
+              >
+                Pay Now
+              </button>
             </div>
 
             <div className="flex flex-wrap gap-4 justify-center mt-8">

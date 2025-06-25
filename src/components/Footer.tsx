@@ -79,8 +79,15 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Centered footer text and admin login */}
       <div className="container max-w-screen-2xl mt-8 pt-8 border-t border-border/40 text-center text-xs text-muted-foreground">
         <p>&copy; {currentYear} {siteConfig.name}. All rights reserved.</p>
+        <Link
+          href="/admin/orders"
+          className="mt-2 inline-block text-muted-foreground hover:text-primary transition-colors"
+        >
+          Admin Login
+        </Link>
       </div>
     </footer>
   );
