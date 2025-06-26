@@ -217,7 +217,7 @@ The price was very reasonable, the work very professional and the whole experien
 
 export const credentials: Credential[] = [
   {
-    title: "Home Improvement Contractor License",
+    title: "HOME IMPROVEMENT CONTRACTOR LICENSE",
     description: "We are fully licensed (State License #2109379-DCA) and comprehensively insured, providing you with complete peace of mind for all our services.",
     icon: ShieldCheck
   },
@@ -227,7 +227,7 @@ export const credentials: Credential[] = [
     icon: BadgeCheck
   },
   {
-    title: "Quality Guarantee",
+    title: "QUALITY GUARANTEE",
     description: "We stand behind our work with a comprehensive quality guarantee on all installations and repairs, ensuring long-lasting performance.",
     icon: Award
   }

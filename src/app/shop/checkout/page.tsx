@@ -21,6 +21,8 @@ export default function CheckoutPage() {
   const [orderType, setOrderType] = useState<'Pickup' | 'Delivery'>('Pickup');
   const [error, setError] = useState('');
   const [showReceipt, setShowReceipt] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
+  const [stripeUrl, setStripeUrl] = useState('');
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -34,10 +36,10 @@ export default function CheckoutPage() {
     setCartItems([]);
   };
 
-  const handleRemoveItem = (indexToRemove: number) => {
-    const updatedCart = cartItems.filter((_, index) => index !== indexToRemove);
-    setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  const handleRemoveItem = (index: number) => {
+    const updated = cartItems.filter((_, i) => i !== index);
+    setCartItems(updated);
+    localStorage.setItem('cart', JSON.stringify(updated));
   };
 
   const baseTotal = cartItems.reduce((total, item) => {
@@ -50,11 +52,36 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     if (!name || !phone || !email || (orderType === 'Delivery' && !address)) {
-      setError('Please fill out all required details. Address is required for delivery.');
+      setError('Please fill out all required fields. Address is required for delivery.');
       return;
     }
 
     try {
+      let currentOrder = localStorage.getItem('orderNumber');
+      let newOrderNumber = currentOrder ? parseInt(currentOrder) + 1 : 1;
+      const paddedOrderNumber = newOrderNumber.toString().padStart(4, '0');
+      localStorage.setItem('orderNumber', newOrderNumber.toString());
+      setOrderNumber(paddedOrderNumber);
+
+      const receipt = {
+        name,
+        email,
+        phone,
+        address,
+        orderType,
+        cartItems,
+        total: totalAmount,
+        orderNumber: paddedOrderNumber,
+        created_at: new Date().toISOString(),
+      };
+      localStorage.setItem('receipt', JSON.stringify(receipt));
+
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(receipt),
+      });
+
       const stripeRes = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -62,54 +89,76 @@ export default function CheckoutPage() {
       });
 
       const stripeData = await stripeRes.json();
-
       if (!stripeData.url) {
-        alert('❌ Failed to create checkout session.');
+        alert('Failed to create Stripe session.');
         return;
       }
 
-      await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          address,
-          phone,
-          email,
-          cartItems,
-          total: totalAmount,
-          orderType,
-        }),
-      });
-
-      localStorage.removeItem('cart');
+      setStripeUrl(stripeData.url);
       setShowReceipt(true);
-
-      setTimeout(() => {
-        window.location.href = stripeData.url;
-      }, 3000);
     } catch (err) {
       console.error(err);
-      alert('❌ Something went wrong during checkout.');
+      alert('Something went wrong.');
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   if (showReceipt) {
+    const now = new Date().toLocaleString();
+
     return (
-      <section className="py-20 bg-muted/50 min-h-screen text-center px-4">
-        <h2 className="text-3xl font-bold mb-4 text-foreground">✅ Order Confirmed</h2>
-        <p className="mb-2 text-muted-foreground">Thank you, {name}! You&apos;re being redirected to payment...</p>
-        <p className="mb-6 text-muted-foreground">Check your email for a receipt.</p>
-        <button
-          onClick={handlePrint}
-          className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
-        >
-          Print Receipt
-        </button>
+      <section className="py-16 px-4 bg-white text-black min-h-screen print:px-0">
+        <div className="max-w-lg mx-auto border border-gray-300 rounded shadow p-6">
+          <Image
+            src="/photo env logo.png"
+            alt="Island Gutter Logo"
+            width={150}
+            height={60}
+            className="mx-auto mb-4"
+          />
+          <h1 className="text-2xl font-bold text-center">Island Gutter</h1>
+          <h2 className="text-green-600 text-xl font-semibold text-center mt-2 mb-4">✅ Order Confirmed</h2>
+          <p className="text-center mb-4">
+            Thank you, {name}! Your order has been placed successfully.
+          </p>
+
+          <div className="text-sm border-t pt-4 space-y-1">
+            <p><strong>Order Type:</strong> {orderType}</p>
+            <p><strong>Order #:</strong> {orderNumber}</p>
+            <p><strong>Customer:</strong> {name}</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Phone:</strong> {phone}</p>
+            {orderType === 'Delivery' && <p><strong>Address:</strong> {address}</p>}
+            <p><strong>Total:</strong> ${totalAmount.toFixed(2)}</p>
+            <p><strong>Date:</strong> {now}</p>
+          </div>
+
+          <div className="text-sm mt-4">
+            <p className="font-semibold mb-1">Items:</p>
+            <ul className="list-disc pl-5">
+              {cartItems.map((item, i) => (
+                <li key={i}>{item.name} - {item.price}</li>
+              ))}
+            </ul>
+          </div>
+
+          {stripeUrl && (
+            <button
+              onClick={() => window.location.href = stripeUrl}
+              className="mt-6 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 print:hidden"
+            >
+              💳 Pay Now
+            </button>
+          )}
+
+          <button
+            onClick={handlePrint}
+            className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 print:hidden"
+          >
+            🖨️ Print Receipt
+          </button>
+        </div>
       </section>
     );
   }
@@ -135,19 +184,22 @@ export default function CheckoutPage() {
                 <div className="flex items-center gap-4">
                   <Image
                     src={item.image}
-                    alt={item.name || 'Product image'}
+                    alt={item.name}
                     width={80}
                     height={80}
                     className="rounded object-contain"
                   />
                   <div>
-                    <h2 className="text-lg font-semibold text-foreground">{item.name}</h2>
+                    <h2 className="text-lg font-semibold">{item.name}</h2>
                     <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <p className="text-foreground font-medium">{item.price}</p>
-                  <button onClick={() => handleRemoveItem(index)} className="text-destructive hover:text-red-700">
+                  <p className="font-medium">{item.price}</p>
+                  <button
+                    onClick={() => handleRemoveItem(index)}
+                    className="text-destructive hover:text-red-700"
+                  >
                     <X size={18} />
                   </button>
                 </div>
@@ -159,7 +211,7 @@ export default function CheckoutPage() {
               <select
                 value={orderType}
                 onChange={(e) => setOrderType(e.target.value as 'Pickup' | 'Delivery')}
-                className="border border-input p-2 rounded w-full md:w-1/2"
+                className="border p-2 rounded w-full md:w-1/2"
               >
                 <option value="Pickup">Pickup</option>
                 <option value="Delivery">Delivery (+$10)</option>
@@ -167,12 +219,12 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex justify-between items-center pt-6 border-t">
-              <h3 className="text-xl font-bold text-foreground">Total:</h3>
+              <h3 className="text-xl font-bold">Total:</h3>
               <span className="text-xl font-semibold text-primary">${totalAmount.toFixed(2)}</span>
             </div>
 
             <div className="bg-white p-6 rounded shadow mt-6">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">Customer Information</h2>
+              <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
               {error && <p className="text-red-500 mb-2">{error}</p>}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
@@ -180,48 +232,48 @@ export default function CheckoutPage() {
                   placeholder="Full Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="border border-input p-2 rounded"
+                  className="border p-2 rounded"
                 />
                 <input
                   type="tel"
                   placeholder="Phone Number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="border border-input p-2 rounded"
+                  className="border p-2 rounded"
                 />
                 <input
                   type="email"
                   placeholder="Email Address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border border-input p-2 rounded col-span-full"
+                  className="border p-2 rounded col-span-full"
                 />
                 <textarea
                   placeholder="Delivery Address (required for Delivery)"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="border border-input p-2 rounded col-span-full"
+                  className="border p-2 rounded col-span-full"
                   rows={3}
                 />
               </div>
 
               <button
                 onClick={handlePlaceOrder}
-                className="mt-6 w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary/90 transition"
+                className="mt-6 w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary/90"
               >
-                Pay Now
+                Review Order
               </button>
             </div>
 
             <div className="flex flex-wrap gap-4 justify-center mt-8">
               <Link href="/shop">
-                <button className="px-6 py-2 text-sm font-medium border border-input text-foreground hover:bg-muted rounded-md transition">
+                <button className="px-6 py-2 border text-sm font-medium border-input text-foreground hover:bg-muted rounded-md">
                   Continue Shopping
                 </button>
               </Link>
               <button
                 onClick={handleClearCart}
-                className="px-6 py-2 text-sm font-medium border border-destructive text-destructive hover:bg-destructive hover:text-white rounded-md transition flex items-center gap-2"
+                className="px-6 py-2 border text-sm font-medium border-destructive text-destructive hover:bg-destructive hover:text-white rounded-md flex items-center gap-2"
               >
                 <Trash2 size={16} /> Clear Cart
               </button>

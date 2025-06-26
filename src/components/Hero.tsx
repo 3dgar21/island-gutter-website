@@ -13,8 +13,8 @@ export default function Hero() {
         {/* Text Block */}
         <div className="text-left">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-            Island Gutter: Your trusted partner for <br />
-            roofing, siding, windows, doors, kitchens, <br />
+            Island Gutter & Home Improvement: Your trusted partner <br />
+             for roofing, siding, windows, doors, kitchens, <br />
             bathrooms, and professional gutter services <br />
             (installation, repair, cleaning) in Staten Island
           </h1>
