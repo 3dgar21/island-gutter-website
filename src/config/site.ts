@@ -217,12 +217,12 @@ The price was very reasonable, the work very professional and the whole experien
 
 export const credentials: Credential[] = [
   {
-    title: "Licensed & Insured",
-    description: "We are fully licensed (State License #IG12345) and comprehensively insured, providing you with complete peace of mind for all our services.",
+    title: "Home Improvement Contractor License",
+    description: "We are fully licensed (State License #2109379-DCA) and comprehensively insured, providing you with complete peace of mind for all our services.",
     icon: ShieldCheck
   },
   {
-    title: "Certified Professionals",
+    title: "CIRTIFICATED OF CONTRACTOR REGISTRATION",
     description: "Our team consists of highly trained and certified specialists dedicated to delivering top-quality workmanship and customer satisfaction across all home improvement services.",
     icon: BadgeCheck
   },

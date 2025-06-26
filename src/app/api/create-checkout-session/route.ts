@@ -19,6 +19,7 @@ export async function POST(req: Request): Promise<Response> {
   try {
     const body = await req.json();
     const cartItems: CartItem[] = body.cartItems;
+    const orderType: string = body.orderType;
 
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
       return new Response(JSON.stringify({ error: 'Cart is empty or invalid.' }), {
@@ -38,10 +39,25 @@ export async function POST(req: Request): Promise<Response> {
       quantity: item.quantity,
     }));
 
+    // Add delivery fee if applicable
+    if (orderType === 'Delivery') {
+      line_items.push({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Delivery Fee' },
+          unit_amount: 1000, // $10
+        },
+        quantity: 1,
+      });
+    }
+
+    // ✅ Use production domain when in dev mode to make Stripe tax work
     const origin =
-      req.headers.get('origin') ??
-      process.env.NEXT_PUBLIC_SITE_URL ??
-      'http://localhost:3000';
+      process.env.NODE_ENV === 'development'
+        ? 'https://www.islandgutter.com'
+        : req.headers.get('origin') ??
+          process.env.NEXT_PUBLIC_SITE_URL ??
+          'https://www.islandgutter.com';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -50,6 +66,7 @@ export async function POST(req: Request): Promise<Response> {
       shipping_address_collection: {
         allowed_countries: ['US', 'CA'],
       },
+      automatic_tax: { enabled: true },
       success_url: `${origin}/success`,
       cancel_url: `${origin}/shop/checkout`,
     });

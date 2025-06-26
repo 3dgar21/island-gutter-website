@@ -14,23 +14,23 @@ type Order = {
   email: string;
   phone: string;
   address: string;
-  items: string; // Stored JSON string
+  items: string;
   total: number;
+  order_type: 'pickup' | 'delivery';
   created_at: string;
 };
 
-const ADMIN_PASSWORD = 'island123'; // 🔒 Change this to your own password
+const ADMIN_PASSWORD = 'island123';
 
 export default function OrdersAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [orders, setOrders] = useState<Order[]>([]);
-  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [orderTypeFilter, setOrderTypeFilter] = useState<'all' | 'pickup' | 'delivery'>('all');
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchOrders();
-    }
+    if (isAuthenticated) fetchOrders();
   }, [isAuthenticated]);
 
   const fetchOrders = async () => {
@@ -38,10 +38,8 @@ export default function OrdersAdminPage() {
       const res = await fetch('/api/orders');
       const data: Order[] = await res.json();
       setOrders(data);
-    } catch (err: unknown) {
-      setError('Failed to load orders.');
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      console.error(message);
+    } catch {
+      console.error('Failed to load orders.');
     }
   };
 
@@ -51,23 +49,18 @@ export default function OrdersAdminPage() {
       if (res.ok) {
         setOrders((prev) => prev.filter((order) => order.id !== id));
       }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to delete order';
-      console.error(message);
+    } catch (error) {
+      console.error('Delete error:', error);
     }
   };
 
   const exportToCSV = () => {
-    const headers = ['ID', 'Name', 'Email', 'Phone', 'Address', 'Items', 'Total', 'Date'];
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Address', 'Items', 'Total', 'Order Type', 'Date'];
     const rows = orders.map((order) => {
       let items: CartItem[] = [];
       try {
         items = JSON.parse(order.items);
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : 'Invalid item format';
-        console.error(msg);
-      }
-
+      } catch {}
       return [
         order.id,
         order.name,
@@ -76,24 +69,33 @@ export default function OrdersAdminPage() {
         order.address,
         items.map((item) => `${item.name} x${item.quantity}`).join('; '),
         `$${order.total.toFixed(2)}`,
+        order.order_type,
         new Date(order.created_at).toLocaleString(),
       ];
     });
-
-    const csvContent =
-      [headers, ...rows]
-        .map((row) => row.map(String).map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
-        .join('\n');
-
+    const csvContent = [headers, ...rows].map((row) => row.map(String).join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement('a');
     a.href = url;
     a.download = 'orders.csv';
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const printPage = () => window.print();
+
+  const filteredOrders = orders.filter((order) => {
+    const matchesType = orderTypeFilter === 'all' || order.order_type === orderTypeFilter;
+    const matchesSearch =
+      order.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.email.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+
+  const pickupRevenue = orders.filter((o) => o.order_type === 'pickup').reduce((sum, o) => sum + o.total, 0);
+  const deliveryRevenue = orders.filter((o) => o.order_type === 'delivery').reduce((sum, o) => sum + o.total, 0);
+  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
 
   if (!isAuthenticated) {
     return (
@@ -102,7 +104,7 @@ export default function OrdersAdminPage() {
         <input
           type="password"
           placeholder="Enter password"
-          className="border border-input p-2 w-full rounded mb-4"
+          className="border p-2 w-full rounded mb-4"
           value={passwordInput}
           onChange={(e) => setPasswordInput(e.target.value)}
         />
@@ -125,73 +127,95 @@ export default function OrdersAdminPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">Customer Orders</h1>
-        <button
-          onClick={exportToCSV}
-          className="text-sm px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
-        >
-          Export CSV
-        </button>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Search by name or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border p-2 rounded"
+          />
+          <select
+            value={orderTypeFilter}
+            onChange={(e) => setOrderTypeFilter(e.target.value as 'all' | 'pickup' | 'delivery')}
+            className="border p-2 rounded"
+          >
+            <option value="all">All</option>
+            <option value="pickup">Pickup</option>
+            <option value="delivery">Delivery</option>
+          </select>
+          <button onClick={exportToCSV} className="bg-primary text-white px-3 py-2 rounded text-sm">Export CSV</button>
+          <button onClick={printPage} className="border px-3 py-2 rounded text-sm">Print</button>
+        </div>
       </div>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <div className="mb-4 text-sm">
+        💰 <strong>Total Revenue:</strong> ${totalRevenue.toFixed(2)} &nbsp;&nbsp;
+        📦 <strong>Pickup:</strong> ${pickupRevenue.toFixed(2)} &nbsp;&nbsp;
+        🚚 <strong>Delivery:</strong> ${deliveryRevenue.toFixed(2)}
+      </div>
 
-      {orders.length === 0 ? (
-        <p>No orders found.</p>
-      ) : (
-        <div className="overflow-auto border rounded-lg">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-muted">
-              <tr>
-                <th className="p-2">#</th>
-                <th className="p-2">Name</th>
-                <th className="p-2">Email</th>
-                <th className="p-2">Phone</th>
-                <th className="p-2">Address</th>
-                <th className="p-2">Items</th>
-                <th className="p-2">Total</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => {
-                let parsedItems: CartItem[] = [];
-                try {
-                  parsedItems = JSON.parse(order.items);
-                } catch (e: unknown) {
-                  const msg = e instanceof Error ? e.message : 'Could not parse items';
-                  console.error(msg);
-                }
-
-                return (
-                  <tr key={order.id} className="border-t hover:bg-muted/30">
-                    <td className="p-2">{order.id}</td>
-                    <td className="p-2">{order.name}</td>
-                    <td className="p-2">{order.email}</td>
-                    <td className="p-2">{order.phone}</td>
-                    <td className="p-2 whitespace-pre-wrap">{order.address}</td>
-                    <td className="p-2 whitespace-pre-wrap">
-                      {parsedItems.map((item) => `${item.name} x${item.quantity}`).join(', ')}
-                    </td>
-                    <td className="p-2">${order.total.toFixed(2)}</td>
-                    <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>
-                    <td className="p-2">
-                      <button
-                        onClick={() => handleDelete(order.id)}
-                        className="text-red-500 hover:text-red-700 text-xs"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="overflow-auto border rounded-lg">
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-muted">
+            <tr>
+              <th className="p-2">#</th>
+              <th className="p-2">Name</th>
+              <th className="p-2">Email</th>
+              <th className="p-2">Phone</th>
+              <th className="p-2">Address</th>
+              <th className="p-2">Items</th>
+              <th className="p-2">Total</th>
+              <th className="p-2">Type</th>
+              <th className="p-2">Date</th>
+              <th className="p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredOrders.map((order) => {
+              let items: CartItem[] = [];
+              try {
+                items = JSON.parse(order.items);
+              } catch {}
+              return (
+                <tr key={order.id} className="border-t hover:bg-muted/30">
+                  <td className="p-2">{order.id}</td>
+                  <td className="p-2">{order.name}</td>
+                  <td className="p-2">{order.email}</td>
+                  <td className="p-2">{order.phone}</td>
+                  <td className="p-2 whitespace-pre-wrap">{order.address}</td>
+                  <td className="p-2 whitespace-pre-wrap">
+                    {items.map((item) => `${item.name} x${item.quantity}`).join(', ')}
+                  </td>
+                  <td className="p-2">${order.total.toFixed(2)}</td>
+                  <td className="p-2 capitalize">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs rounded-full font-medium ${
+                        order.order_type === 'pickup'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-blue-100 text-blue-700'
+                      }`}
+                    >
+                      {order.order_type}
+                    </span>
+                  </td>
+                  <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>
+                  <td className="p-2">
+                    <button
+                      onClick={() => handleDelete(order.id)}
+                      className="text-red-500 hover:text-red-700 text-xs"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

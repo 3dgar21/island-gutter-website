@@ -14,6 +14,7 @@ type Order = {
   email: string;
   items: string;
   total: number;
+  order_type: string;
   created_at: string;
 };
 
@@ -26,6 +27,7 @@ export async function POST(req: Request): Promise<Response> {
       email,
       cartItems,
       total,
+      orderType,
     }: {
       name: string;
       address: string;
@@ -33,12 +35,22 @@ export async function POST(req: Request): Promise<Response> {
       email: string;
       cartItems: CartItem[];
       total: number;
+      orderType: string;
     } = await req.json();
 
     await apiRun(
-      `INSERT INTO orders (name, address, phone, email, items, total, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [name, address, phone, email, JSON.stringify(cartItems), total, new Date().toISOString()]
+      `INSERT INTO orders (name, address, phone, email, items, total, order_type, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        name,
+        address,
+        phone,
+        email,
+        JSON.stringify(cartItems),
+        total,
+        orderType,
+        new Date().toISOString(),
+      ]
     );
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });

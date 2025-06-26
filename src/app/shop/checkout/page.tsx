@@ -18,7 +18,9 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [orderType, setOrderType] = useState<'Pickup' | 'Delivery'>('Pickup');
   const [error, setError] = useState('');
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -38,23 +40,25 @@ export default function CheckoutPage() {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
-  const totalAmount = cartItems.reduce((total, item) => {
+  const baseTotal = cartItems.reduce((total, item) => {
     const price = parseFloat(item.price.replace(/[^\d.]/g, ''));
     return total + price * item.quantity;
   }, 0);
 
+  const deliveryFee = orderType === 'Delivery' ? 10 : 0;
+  const totalAmount = baseTotal + deliveryFee;
+
   const handlePlaceOrder = async () => {
-    if (!name || !address || !phone || !email) {
-      setError('Please fill out all delivery details.');
+    if (!name || !phone || !email || (orderType === 'Delivery' && !address)) {
+      setError('Please fill out all required details. Address is required for delivery.');
       return;
     }
 
     try {
-      // Step 1: Create Stripe Checkout session
       const stripeRes = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cartItems }),
+        body: JSON.stringify({ cartItems, orderType }),
       });
 
       const stripeData = await stripeRes.json();
@@ -64,7 +68,6 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Step 2: Save order to SQLite (with user info)
       await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,17 +78,41 @@ export default function CheckoutPage() {
           email,
           cartItems,
           total: totalAmount,
+          orderType,
         }),
       });
 
-      // Step 3: Redirect to Stripe Checkout
-      window.location.href = stripeData.url;
+      localStorage.removeItem('cart');
+      setShowReceipt(true);
 
+      setTimeout(() => {
+        window.location.href = stripeData.url;
+      }, 3000);
     } catch (err) {
       console.error(err);
       alert('❌ Something went wrong during checkout.');
     }
   };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  if (showReceipt) {
+    return (
+      <section className="py-20 bg-muted/50 min-h-screen text-center px-4">
+        <h2 className="text-3xl font-bold mb-4 text-foreground">✅ Order Confirmed</h2>
+        <p className="mb-2 text-muted-foreground">Thank you, {name}! You&apos;re being redirected to payment...</p>
+        <p className="mb-6 text-muted-foreground">Check your email for a receipt.</p>
+        <button
+          onClick={handlePrint}
+          className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
+        >
+          Print Receipt
+        </button>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-muted/50 min-h-screen">
@@ -127,14 +154,25 @@ export default function CheckoutPage() {
               </div>
             ))}
 
+            <div className="pt-4">
+              <label className="block mb-2 font-medium">Order Type:</label>
+              <select
+                value={orderType}
+                onChange={(e) => setOrderType(e.target.value as 'Pickup' | 'Delivery')}
+                className="border border-input p-2 rounded w-full md:w-1/2"
+              >
+                <option value="Pickup">Pickup</option>
+                <option value="Delivery">Delivery (+$10)</option>
+              </select>
+            </div>
+
             <div className="flex justify-between items-center pt-6 border-t">
               <h3 className="text-xl font-bold text-foreground">Total:</h3>
               <span className="text-xl font-semibold text-primary">${totalAmount.toFixed(2)}</span>
             </div>
 
-            {/* 🚚 Delivery Details Form */}
             <div className="bg-white p-6 rounded shadow mt-6">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">Delivery Information</h2>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">Customer Information</h2>
               {error && <p className="text-red-500 mb-2">{error}</p>}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
@@ -159,7 +197,7 @@ export default function CheckoutPage() {
                   className="border border-input p-2 rounded col-span-full"
                 />
                 <textarea
-                  placeholder="Delivery Address"
+                  placeholder="Delivery Address (required for Delivery)"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="border border-input p-2 rounded col-span-full"
