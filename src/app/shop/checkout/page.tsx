@@ -50,15 +50,15 @@ export default function CheckoutPage() {
   const deliveryFee = orderType === 'Delivery' ? 10 : 0;
   const totalAmount = baseTotal + deliveryFee;
 
-  const handlePlaceOrder = async () => {
+  const handleReviewOrder = async () => {
     if (!name || !phone || !email || (orderType === 'Delivery' && !address)) {
       setError('Please fill out all required fields. Address is required for delivery.');
       return;
     }
 
     try {
-      let currentOrder = localStorage.getItem('orderNumber');
-      let newOrderNumber = currentOrder ? parseInt(currentOrder) + 1 : 1;
+      const currentOrder = localStorage.getItem('orderNumber');
+      const newOrderNumber = currentOrder ? parseInt(currentOrder) + 1 : 1;
       const paddedOrderNumber = newOrderNumber.toString().padStart(4, '0');
       localStorage.setItem('orderNumber', newOrderNumber.toString());
       setOrderNumber(paddedOrderNumber);
@@ -258,7 +258,7 @@ export default function CheckoutPage() {
               </div>
 
               <button
-                onClick={handlePlaceOrder}
+                onClick={handleReviewOrder}
                 className="mt-6 w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary/90"
               >
                 Review Order
