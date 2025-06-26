@@ -1,9 +1,13 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  throw new Error('❌ Missing STRIPE_SECRET_KEY in environment variables');
+}
+
+const stripe = new Stripe(stripeSecretKey, {
   apiVersion: '2025-05-28.basil',
 });
-
 
 type CartItem = {
   name: string;
@@ -16,6 +20,13 @@ export async function POST(req: Request): Promise<Response> {
     const body = await req.json();
     const cartItems: CartItem[] = body.cartItems;
 
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      return new Response(JSON.stringify({ error: 'Cart is empty or invalid.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => ({
       price_data: {
         currency: 'usd',
@@ -27,7 +38,10 @@ export async function POST(req: Request): Promise<Response> {
       quantity: item.quantity,
     }));
 
-    const origin = req.headers.get('origin') ?? 'http://localhost:3000';
+    const origin =
+      req.headers.get('origin') ??
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      'http://localhost:3000';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -45,8 +59,8 @@ export async function POST(req: Request): Promise<Response> {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {
+    console.error('[Stripe Checkout Error]', error);
     const message = error instanceof Error ? error.message : 'Unknown Stripe error';
-     console.error('[Stripe Checkout Error]', error);
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
