@@ -51,7 +51,6 @@ export async function POST(req: Request): Promise<Response> {
       });
     }
 
-    // ✅ Use production domain when in dev mode to make Stripe tax work
     const origin =
       process.env.NODE_ENV === 'development'
         ? 'https://www.islandgutter.com'
@@ -66,7 +65,8 @@ export async function POST(req: Request): Promise<Response> {
       shipping_address_collection: {
         allowed_countries: ['US', 'CA'],
       },
-      automatic_tax: { enabled: true },
+      // 🔧 Stripe Tax disabled for now to avoid origin error
+      // automatic_tax: { enabled: true },
       success_url: `${origin}/success`,
       cancel_url: `${origin}/shop/checkout`,
     });
