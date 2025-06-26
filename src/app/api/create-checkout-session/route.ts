@@ -1,8 +1,9 @@
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2025-05-28.basil', // ✅ use latest stable API version
+  apiVersion: '2025-05-28.basil',
 });
+
 
 type CartItem = {
   name: string;
@@ -45,7 +46,7 @@ export async function POST(req: Request): Promise<Response> {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown Stripe error';
-    console.error('Stripe error:', message);
+     console.error('[Stripe Checkout Error]', error);
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
